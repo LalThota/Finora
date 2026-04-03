@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-inter: 'Inter', sans-serif;
+  --font-outfit: 'Outfit', sans-serif;
+}
+
+body {
+  font-family: var(--font-inter);
+  @apply bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-gray-100 transition-colors duration-500 overflow-x-hidden;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: var(--font-outfit);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 dark:bg-slate-800 rounded-full hover:bg-primary-500 transition-all duration-300;
+}
+
+/* Glassmorphism & Effects */
+.glass {
+  @apply bg-white/70 dark:bg-slate-900/40 backdrop-blur-xl border border-white/40 dark:border-slate-800/50 shadow-2xl shadow-slate-200/50 dark:shadow-none;
+}
+
+.glass-header {
+  @apply sticky top-0 z-30 bg-white/60 dark:bg-slate-950/60 backdrop-blur-md border-b border-white/20 dark:border-slate-800/40;
+}
+
+.card-hover {
+  @apply transition-all duration-500 hover:shadow-2xl hover:shadow-primary-500/10 hover:-translate-y-1 active:scale-[0.98];
+}
+
+/* Mesh Background Effect */
+.mesh-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.mesh-blob {
+  @apply absolute rounded-full blur-[120px] opacity-20 mix-blend-multiply dark:mix-blend-screen;
+  animation: float 20s ease-in-out infinite;
+}
+
+.blob-1 {
+  @apply w-[600px] h-[600px] bg-primary-500/40 -top-40 -left-40;
+  animation-duration: 25s;
+}
+
+.blob-2 {
+  @apply w-[500px] h-[500px] bg-emerald-500/30 bottom-0 -right-20;
+  animation: float 30s infinite alternate-reverse;
+}
+
+.blob-3 {
+  @apply w-[400px] h-[400px] bg-purple-500/20 top-1/2 left-1/4;
+  animation: float 20s infinite reverse;
+}
+
+.blob-4 {
+  @apply w-[300px] h-[300px] bg-amber-500/20 top-1/4 right-1/3;
+  animation: float 35s infinite alternate;
+}
+
+.blob-5 {
+  @apply w-[450px] h-[450px] bg-rose-500/20 bottom-1/4 left-1/3;
+  animation: float 28s infinite;
+}
+
+.blob-6 {
+  @apply w-[250px] h-[250px] bg-blue-500/20 top-0 right-0;
+  animation: float 22s infinite alternate-reverse;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+/* Gradient Text */
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-emerald-600 dark:from-primary-400 dark:to-emerald-400 font-black;
+}
+
+/* Chart Tooltip Customization */
+.recharts-tooltip-wrapper {
+  outline: none !important;
+}
+
+.custom-tooltip {
+  @apply glass p-4 rounded-2xl shadow-2xl border-none outline-none;
+}
