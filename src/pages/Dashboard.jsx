@@ -315,9 +315,9 @@ const Dashboard = () => {
 
       <Sidebar />
       
-      <main className="flex-1 lg:ml-80 ml-0 p-6 lg:p-12 pb-24 relative z-10">
+      <main className="flex-1 lg:ml-80 ml-0 p-4 sm:p-6 lg:p-12 pb-24 relative z-10 w-full overflow-hidden sm:overflow-visible">
         {/* Header */}
-        <header className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-8 sticky top-0 py-4 glass-header -mx-6 lg:-mx-12 px-6 lg:px-12 backdrop-blur-3xl z-40">
+        <header className="flex flex-row items-center justify-between mb-8 md:mb-12 gap-3 sm:gap-4 md:gap-8 sticky top-0 py-4 glass-header -mx-4 sm:-mx-6 lg:-mx-12 px-4 sm:px-6 lg:px-12 backdrop-blur-3xl z-40">
           <div className="flex items-center gap-4">
             {/* Mobile Menu Toggle */}
             <button 
@@ -331,7 +331,7 @@ const Dashboard = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
             >
-              <div className="flex items-center gap-2 text-xs font-bold text-primary-500 uppercase tracking-[0.2em] mb-1">
+              <div className="hidden sm:flex items-center gap-2 text-xs font-bold text-primary-500 uppercase tracking-[0.2em] mb-1">
                 <div className="w-8 h-[2px] bg-primary-500/30" />
                 Intelligence Dashboard
               </div>
