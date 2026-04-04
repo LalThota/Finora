@@ -17,8 +17,10 @@ const TransactionTable = () => {
     sortField, setSortField,
     sortOrder, setSortOrder,
     deleteTransaction, addTransaction, updateTransaction,
-    categories
+    categories, showToast
   } = useGlobalContext();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -35,7 +37,12 @@ const TransactionTable = () => {
   const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
 
   useEffect(() => {
-    setCurrentPage(1);
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      setCurrentPage(1);
+    }, 400);
+    return () => clearTimeout(timer);
   }, [filters]);
 
   const paginatedTransactions = filteredTransactions.slice(
@@ -76,6 +83,15 @@ const TransactionTable = () => {
       amount: parseFloat(formData.amount)
     };
 
+    if (!formData.description.trim()) {
+      showToast('Title is required', 'error');
+      return;
+    }
+    if (!formData.amount || parseFloat(formData.amount) <= 0) {
+      showToast('Please enter a valid positive amount', 'error');
+      return;
+    }
+
     if (editingId) {
       updateTransaction(editingId, data);
     } else {
@@ -114,6 +130,7 @@ const TransactionTable = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    showToast('CSV downloaded successfully', 'success');
   };
 
   const SortIcon = ({ column }) => {
@@ -184,10 +201,10 @@ const TransactionTable = () => {
 
             <button 
               onClick={exportToCSV}
-              className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 hover:text-primary-500 hover:bg-primary-500/5 transition-all border border-transparent hover:border-primary-500/20"
-              title="Export to CSV"
+              className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 hover:text-primary-500 hover:bg-primary-500/5 transition-all border border-transparent hover:border-primary-500/20"
             >
               <Download className="w-5 h-5" />
+              <span className="text-sm font-bold">Export CSV</span>
             </button>
           </div>
 
@@ -231,7 +248,12 @@ const TransactionTable = () => {
               {role === 'Admin' && <th className="px-4 md:px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+          <tbody className={twMerge("divide-y divide-slate-100 dark:divide-slate-800/60 relative", isLoading && "opacity-40 pointer-events-none")}>
+            {isLoading && (
+              <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/10 backdrop-blur-[1px]">
+                <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
             {paginatedTransactions.map((t) => (
               <tr key={t.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-all group">
                 <td className="px-4 md:px-8 py-5 text-sm text-slate-500 dark:text-slate-400 font-medium hidden sm:table-cell">
@@ -287,13 +309,25 @@ const TransactionTable = () => {
           </tbody>
         </table>
         
-        {paginatedTransactions.length === 0 && (
-          <div className="p-12 text-center">
-            <div className="bg-slate-100 dark:bg-slate-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search className="w-8 h-8 text-slate-400" />
-            </div>
-            <h5 className="text-lg font-semibold text-slate-900 dark:text-white">No transactions found</h5>
-            <p className="text-slate-500">Try adjusting your filters or search term.</p>
+        {!isLoading && paginatedTransactions.length === 0 && (
+          <div className="p-20 text-center flex flex-col items-center justify-center">
+             <motion.div 
+               initial={{ scale: 0.8, opacity: 0 }}
+               animate={{ scale: 1, opacity: 1 }}
+               className="bg-slate-100 dark:bg-slate-800/50 w-24 h-24 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner"
+             >
+               <X className="w-10 h-10 text-slate-300 dark:text-slate-600" />
+             </motion.div>
+             <h5 className="text-2xl font-black text-slate-900 dark:text-white font-heading">No transactions yet</h5>
+             <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-xs mx-auto font-medium">Add your first record or try adjusting your filters to see some activity!</p>
+             {role === 'Admin' && (
+                <button 
+                  onClick={() => handleOpenModal()}
+                  className="mt-8 px-8 py-3.5 bg-primary-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary-500/20 hover:scale-105 active:scale-95 transition-all"
+                >
+                  Create Transaction
+                </button>
+             )}
           </div>
         )}
       </div>

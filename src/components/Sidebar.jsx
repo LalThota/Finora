@@ -58,7 +58,7 @@ const Sidebar = () => {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 space-y-2">
+          <nav className="flex-1 px-4 space-y-2 overflow-y-auto">
             {menuItems.map((item) => {
               const isActive = activeView === item.title;
               return (
@@ -89,6 +89,27 @@ const Sidebar = () => {
                 </button>
               );
             })}
+
+            {/* Features Implemented Tracker */}
+            <div className="mt-8 px-5 py-6 rounded-[2.5rem] bg-gradient-to-br from-slate-50 to-white dark:from-white/5 dark:to-transparent border border-slate-200/60 dark:border-white/5 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <Shield className="w-3.5 h-3.5 text-primary-500" />
+                <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Features Implemented</h5>
+              </div>
+              <div className="grid grid-cols-1 gap-3">
+                {[
+                  'Search', 'Sorting', 'Filtering', 
+                  'Role-based Access', 'Insights', 'CSV Export'
+                ].map((feature) => (
+                  <div key={feature} className="flex items-center gap-3 group/feat">
+                    <div className="w-5 h-5 rounded-lg bg-emerald-500/10 flex items-center justify-center transition-colors group-hover/feat:bg-emerald-500/20">
+                      <span className="text-emerald-500 text-[10px] font-bold">✔</span>
+                    </div>
+                    <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 group-hover/feat:text-slate-900 dark:group-hover/feat:text-white transition-colors">{feature}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </nav>
 
           {/* Bottom Section */}

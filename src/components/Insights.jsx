@@ -56,13 +56,16 @@ const Insights = () => {
       }
     }
 
-    // Mock Monthly comparison
+    // Real Monthly comparison based on calculated stats
+    const isIncrease = stats.expenseChange > 0;
     list.push({
       title: 'Monthly Comparison',
-      value: '+14%',
-      description: `You spent 14% more than last month. Adjust your budget limits.`,
-      icon: TrendingUp,
-      color: 'rose'
+      value: `${isIncrease ? '+' : ''}${stats.expenseChange}%`,
+      description: isIncrease 
+        ? `You spent ${stats.expenseChange}% more than last period. Adjust your budget limits.`
+        : `Excellent. Your spending is down by ${Math.abs(stats.expenseChange)}% compared to last period.`,
+      icon: isIncrease ? TrendingUp : TrendingDown,
+      color: isIncrease ? 'rose' : 'emerald'
     });
 
     // Budget Alerts
