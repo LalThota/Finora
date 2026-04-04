@@ -210,6 +210,7 @@ const TransactionTable = () => {
                 className="flex-1 py-4 bg-transparent border-none text-xs font-bold text-slate-700 dark:text-slate-200 outline-none uppercase"
                 value={filters.startDate}
                 onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value }))}
+                onClick={(e) => e.currentTarget.showPicker?.()}
                 title="Log Start"
               />
               <span className="text-slate-300 dark:text-slate-700 font-bold">-</span>
@@ -218,6 +219,7 @@ const TransactionTable = () => {
                 className="flex-1 py-4 bg-transparent border-none text-xs font-bold text-slate-700 dark:text-slate-200 outline-none uppercase"
                 value={filters.endDate}
                 onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}
+                onClick={(e) => e.currentTarget.showPicker?.()}
                 title="Log End"
               />
             </div>
@@ -453,6 +455,7 @@ const TransactionTable = () => {
                       className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-primary-500 transition-all text-slate-900 dark:text-white"
                       value={formData.date}
                       onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                      onClick={(e) => e.currentTarget.showPicker?.()}
                     />
                   </div>
                 </div>
