@@ -5,6 +5,7 @@ import {
   PieChart, Pie, Cell, Legend
 } from 'recharts';
 import { useGlobalContext } from '../store/GlobalContext';
+import { format } from 'date-fns';
 
 const COLORS = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#f43f5e', '#64748b'];
 

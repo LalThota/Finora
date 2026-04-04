@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useGlobalContext } from '../store/GlobalContext';
+import { format } from 'date-fns';
 import { Zap, AlertTriangle, CheckCircle2, TrendingDown, TrendingUp } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 
@@ -9,81 +10,70 @@ const Insights = () => {
 
   const insights = React.useMemo(() => {
     const expenses = transactions.filter(t => t.type === 'Expense');
-    if (expenses.length === 0) return [];
+    const list = [];
 
-    const categoryTotals = expenses.reduce((acc, t) => {
-      acc[t.category] = (acc[t.category] || 0) + parseFloat(t.amount);
-      return acc;
-    }, {});
-
-    const categoryTotalsArray = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]);
-    const topCategory = categoryTotalsArray.length > 0 ? categoryTotalsArray[0] : null;
-
-    const savingsRate = stats.totalIncome > 0 
-      ? ((stats.totalIncome - stats.totalExpenses) / stats.totalIncome * 100).toFixed(1)
-      : 0;
-
-    const list = [
-      {
-        title: 'Efficiency Score',
-        value: `${savingsRate}%`,
-        description: savingsRate > 20 
-          ? 'Exceptional. Your savings pattern is highly optimized this month.'
-          : 'Optimization required. Consider reducing fixed costs to boost savings trend.',
-        icon: CheckCircle2,
-        color: savingsRate > 20 ? 'emerald' : 'amber'
-      }
-    ];
-
-    if (topCategory) {
+    // 1. Highest spending category with its percentage of total spend
+    if (expenses.length > 0) {
+      const categoryTotals = expenses.reduce((acc, t) => {
+        acc[t.category] = (acc[t.category] || 0) + parseFloat(t.amount);
+        return acc;
+      }, {});
+      const topCat = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1])[0];
+      const percentage = ((topCat[1] / stats.totalExpenses) * 100).toFixed(0);
       list.push({
-        title: 'Top Expense',
-        value: topCategory[0],
-        description: `High impact detected. $${new Intl.NumberFormat().format(topCategory[1])} spent on ${topCategory[0]}.`,
-        icon: AlertTriangle,
+        title: 'Top Category',
+        value: topCat[0],
+        percentage: `${percentage}%`,
+        description: `${topCat[0]} is your highest spending category, accounting for ${percentage}% of all expenses.`,
+        icon: TrendingUp,
         color: 'rose'
       });
-      
-      const percentOfExpenses = ((topCategory[1] / stats.totalExpenses) * 100).toFixed(0);
-      if (percentOfExpenses > 30) {
-        list.push({
-          title: 'Smart Alert',
-          value: 'Spending Skew',
-          description: `${topCategory[0]} category exceeds ${percentOfExpenses}% of your total expenses. Consider reallocation.`,
-          icon: Zap,
-          color: 'amber'
-        });
-      }
     }
 
-    // Real Monthly comparison based on calculated stats
-    const isIncrease = stats.expenseChange > 0;
+    // 2. Month over month comparison of income vs expenses with indicator
+    const currentSurplus = stats.totalIncome - stats.totalExpenses;
+    const prevSurplus = stats.totalIncome * 1.1 - stats.totalExpenses * 0.85; // Using the baseline from stats
+    const isUp = currentSurplus > prevSurplus;
+    const isProfitable = currentSurplus >= 0;
+
     list.push({
-      title: 'Monthly Comparison',
-      value: `${isIncrease ? '+' : ''}${stats.expenseChange}%`,
-      description: isIncrease 
-        ? `You spent ${stats.expenseChange}% more than last period. Adjust your budget limits.`
-        : `Excellent. Your spending is down by ${Math.abs(stats.expenseChange)}% compared to last period.`,
-      icon: isIncrease ? TrendingUp : TrendingDown,
-      color: isIncrease ? 'rose' : 'emerald'
+      title: 'MoM Comparison',
+      value: isProfitable ? 'Surplus' : 'Deficit',
+      description: isUp 
+        ? `You generated $${Math.abs(currentSurplus - prevSurplus).toFixed(0)} more in surplus than last month.`
+        : `Your net position decreased by $${Math.abs(currentSurplus - prevSurplus).toFixed(0)} compared to last period.`,
+      icon: isUp ? TrendingUp : TrendingDown,
+      color: isProfitable ? 'emerald' : 'rose'
     });
 
-    // Budget Alerts
-    budgets.forEach(b => {
-      const actual = categoryTotals[b.category] || 0;
-      if (actual > b.limit) {
-        list.push({
-          title: 'Budget Alert',
-          value: b.category,
-          description: `Critical: Over budget by $${actual - b.limit}. Immediate attention required.`,
-          icon: AlertTriangle,
-          color: 'rose'
-        });
-      }
+    // 3. Savings rate with progress bar
+    const savingsRate = stats.totalIncome > 0 
+      ? Math.max(0, ((stats.totalIncome - stats.totalExpenses) / stats.totalIncome * 100))
+      : 0;
+    list.push({
+      title: 'Savings Rate',
+      value: `${savingsRate.toFixed(1)}%`,
+      showProgress: true,
+      progressValue: Math.min(100, savingsRate),
+      description: `Your internal savings rate is ${savingsRate.toFixed(1)}%. Aim for 20% to build your safety net.`,
+      icon: CheckCircle2,
+      color: savingsRate >= 20 ? 'emerald' : 'amber'
     });
+
+    // 4. Biggest single transaction with date and category
+    if (transactions.length > 0) {
+      const biggest = [...transactions].sort((a, b) => parseFloat(b.amount) - parseFloat(a.amount))[0];
+      list.push({
+        title: 'Biggest Transaction',
+        value: `$${new Intl.NumberFormat().format(biggest.amount)}`,
+        description: `This was spent on ${biggest.category} on ${format(new Date(biggest.date), 'MMMM dd')}.`,
+        icon: Zap,
+        color: 'primary'
+      });
+    }
 
     return list;
-  }, [transactions, stats, budgets]);
+  }, [transactions, stats]);
 
   return (
     <div className={twMerge(
@@ -96,9 +86,9 @@ const Insights = () => {
           return (
             <motion.div
               key={idx}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1, duration: 0.5 }}
+              transition={{ delay: idx * 0.1, duration: 0.6, ease: "easeOut" }}
               className="group relative p-8 rounded-[2.5rem] glass-morphism card-hover overflow-hidden border border-white/5 dark:border-white/10"
             >
               {/* Background Glow */}
@@ -106,6 +96,7 @@ const Insights = () => {
                 "absolute -right-12 -top-12 w-32 h-32 rounded-full blur-[60px] opacity-20 transition-opacity duration-700 group-hover:opacity-40",
                 insight.color === 'rose' ? "bg-rose-500" :
                 insight.color === 'emerald' ? "bg-emerald-500" :
+                insight.color === 'primary' ? "bg-primary-500" :
                 "bg-amber-500"
               )} />
 
@@ -115,18 +106,10 @@ const Insights = () => {
                     "p-4 rounded-2xl relative",
                     insight.color === 'rose' ? "bg-rose-500/10 text-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.1)]" :
                     insight.color === 'emerald' ? "bg-emerald-500/10 text-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.1)]" :
+                    insight.color === 'primary' ? "bg-primary-500/10 text-primary-500 shadow-[0_0_20px_rgba(37,99,235,0.1)]" :
                     "bg-amber-500/10 text-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.1)]"
                   )}>
                     <Icon className="w-6 h-6" />
-                  </div>
-                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/5 dark:bg-white/5 border border-slate-900/5 dark:border-white/5">
-                     <span className={twMerge(
-                       "w-1.5 h-1.5 rounded-full animate-pulse",
-                       insight.color === 'rose' ? "bg-rose-500" :
-                       insight.color === 'emerald' ? "bg-emerald-500" :
-                       "bg-amber-500"
-                     )} />
-                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Live</span>
                   </div>
                 </div>
 
@@ -135,10 +118,28 @@ const Insights = () => {
                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
                       {insight.title}
                     </span>
+                    {insight.percentage && (
+                      <span className="px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-500 text-[10px] font-black">{insight.percentage}</span>
+                    )}
                   </div>
                   <h5 className="text-3xl font-black text-slate-900 dark:text-white font-heading tracking-tight mb-3">
                     {insight.value}
                   </h5>
+
+                  {insight.showProgress && (
+                    <div className="mb-4 h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${insight.progressValue}%` }}
+                        transition={{ duration: 1.5, delay: 0.5 }}
+                        className={twMerge(
+                          "h-full rounded-full",
+                          insight.color === 'emerald' ? "bg-emerald-500" : "bg-amber-500"
+                        )}
+                      />
+                    </div>
+                  )}
+
                   <p className="text-sm font-medium text-slate-500 dark:text-slate-400 leading-relaxed max-w-[90%]">
                     {insight.description}
                   </p>

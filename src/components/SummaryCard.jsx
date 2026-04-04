@@ -29,6 +29,7 @@ const SummaryCard = ({ title, value, type, trend, icon: Icon, isLoading, isPerce
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
       whileHover={{ y: -8, scale: 1.02 }}
       className={twMerge(
         "relative rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-8 card-hover glass group overflow-hidden h-full",

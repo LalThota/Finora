@@ -16,7 +16,7 @@ import { format } from 'date-fns';
 import { twMerge } from 'tailwind-merge';
 
 const Dashboard = () => {
-  const { stats, role, activeView, userProfile, setUserProfile, notifications, setNotifications, setShowMobileMenu, toast, isGlobalLoading } = useGlobalContext();
+  const { stats, role, setRole, activeView, userProfile, setUserProfile, notifications, setNotifications, setShowMobileMenu, toast, isGlobalLoading } = useGlobalContext();
 
   const savingsRate = stats.totalIncome > 0 
     ? ((stats.totalIncome - stats.totalExpenses) / stats.totalIncome * 100).toFixed(1)
@@ -333,53 +333,80 @@ const Dashboard = () => {
       
       <main className="flex-1 lg:ml-80 ml-0 p-4 sm:p-6 lg:p-12 pb-24 relative z-10 w-full overflow-hidden sm:overflow-visible">
         {/* Header */}
-        <header className="flex flex-row items-center justify-between mb-8 md:mb-12 gap-3 sm:gap-4 md:gap-8 sticky top-0 py-4 glass-header -mx-4 sm:-mx-6 lg:-mx-12 px-4 sm:px-6 lg:px-12 backdrop-blur-3xl z-40">
-          <div className="flex items-center gap-4">
-            {/* Mobile Menu Toggle */}
-            <button 
-              onClick={() => setShowMobileMenu(true)}
-              className="lg:hidden p-3 rounded-2xl bg-white/50 dark:bg-slate-900/50 text-slate-500 hover:text-primary-500 transition-colors border border-white/20"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
+        <header className="sticky top-0 z-40 mb-8 md:mb-12 -mx-4 sm:-mx-6 lg:-mx-12 px-4 sm:px-6 lg:px-12 py-4 glass-header backdrop-blur-3xl">
+          <div className="flex flex-col gap-4">
+            {/* Top Row: Menu, Title, and Profile */}
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-3 sm:gap-4 truncate mr-2">
+                <button 
+                  onClick={() => setShowMobileMenu(true)}
+                  className="lg:hidden p-2.5 sm:p-3 rounded-2xl bg-white/50 dark:bg-slate-900/50 text-slate-500 hover:text-primary-500 transition-colors border border-white/20"
+                >
+                  <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
+                </button>
 
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-            >
-              <div className="hidden sm:flex items-center gap-2 text-xs font-bold text-primary-500 uppercase tracking-[0.2em] mb-1">
-                <div className="w-8 h-[2px] bg-primary-500/30" />
-                Intelligence Dashboard
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="truncate"
+                >
+                  <div className="hidden min-[400px]:flex items-center gap-2 text-[10px] font-black text-primary-500 uppercase tracking-[0.2em] mb-0.5">
+                    <div className="w-4 h-[2px] bg-primary-500/30" />
+                    Nexus Intelligence
+                  </div>
+                  <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-none uppercase">
+                    {activeView}
+                  </h2>
+                </motion.div>
               </div>
-              <h2 className="text-2xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-                {activeView}
-              </h2>
-            </motion.div>
-          </div>
 
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-white/50 dark:bg-slate-900/50 border border-white/20 dark:border-slate-800/20 shadow-sm text-sm text-slate-500">
-              <Calendar className="w-4 h-4" />
-              <span>{format(new Date(), 'EEE, MMM dd')}</span>
+              {/* Mobile Profile & Actions */}
+              <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                <div className="hidden min-[450px]:flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-white/50 dark:bg-slate-900/50 border border-white/20 text-[10px] font-bold text-slate-500">
+                  <Calendar className="w-3.5 h-3.5 text-primary-500" />
+                  <span>{format(new Date(), 'MMM dd')}</span>
+                </div>
+
+                <div className="flex items-center gap-3 pl-2 sm:pl-3 border-l border-slate-200 dark:border-slate-800 ml-1">
+                  <div className="text-right hidden sm:block">
+                    <p className="text-[11px] font-black text-slate-900 dark:text-white leading-tight uppercase">{userProfile.name}</p>
+                    <p className="text-[9px] text-primary-500 font-bold uppercase tracking-widest leading-none mt-0.5">{role}</p>
+                  </div>
+                  <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-[1.25rem] relative overflow-hidden ring-2 ring-primary-500/10 shadow-lg shadow-primary-500/5 active:scale-95 transition-all">
+                    <img src={userProfile.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                  </div>
+                </div>
+              </div>
             </div>
-            
-            <button className="relative p-3 glass rounded-2xl hover:scale-105 active:scale-95 transition-all group">
-              <Bell className="w-5 h-5 text-slate-500 group-hover:text-primary-500 transition-colors" />
-              <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-rose-500 border-2 border-white dark:border-slate-950 rounded-full" />
-            </button>
-            
-            <div className="flex items-center gap-3 pl-2 border-l border-slate-200 dark:border-slate-800 ml-2">
-              <div className="text-right hidden md:block">
-                <p className="text-xs font-bold text-slate-900 dark:text-white leading-tight">{userProfile.name}</p>
-                <p className="text-[10px] text-primary-500 font-bold uppercase tracking-widest leading-none mt-0.5">{role}</p>
-              </div>
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-[1.25rem] relative overflow-hidden group cursor-pointer shadow-xl shadow-primary-500/10 active:scale-95 transition-all">
-                <img 
-                  src={userProfile.avatar}
-                  alt="Avatar"
-                  className="w-full h-full object-cover"
-                />
-              </div>
+
+            {/* Bottom Row: Role Switcher & Analytics (Visible only in md or stacked in sm) */}
+            <div className="flex items-center justify-between min-[500px]:justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800/40 md:border-none md:pt-0">
+               {/* Fixed Role Switcher Container */}
+               <div className="flex-1 min-[500px]:flex-initial flex items-center p-1 bg-slate-100/80 dark:bg-slate-800/80 rounded-2xl">
+                  <button
+                    onClick={() => setRole('Admin')}
+                    className={twMerge(
+                      "flex-1 min-[500px]:px-5 py-2.5 rounded-xl text-[10px] sm:text-[11px] font-black uppercase tracking-widest transition-all whitespace-nowrap",
+                      role === 'Admin' ? "bg-white dark:bg-slate-700 text-primary-600 dark:text-white shadow-xl shadow-slate-200/50 dark:shadow-none" : "text-slate-400 hover:text-slate-600"
+                    )}
+                  >
+                    Admin
+                  </button>
+                  <button
+                    onClick={() => setRole('Viewer')}
+                    className={twMerge(
+                      "flex-1 min-[500px]:px-5 py-2.5 rounded-xl text-[10px] sm:text-[11px] font-black uppercase tracking-widest transition-all whitespace-nowrap",
+                      role === 'Viewer' ? "bg-white dark:bg-slate-700 text-primary-600 dark:text-white shadow-xl shadow-slate-200/50 dark:shadow-none" : "text-slate-400 hover:text-slate-600"
+                    )}
+                  >
+                    Viewer
+                  </button>
+                </div>
+                
+                <button className="flex-shrink-0 relative p-3 bg-white/50 dark:bg-slate-800/50 rounded-2xl hover:scale-110 active:scale-95 transition-all group border border-white/20">
+                  <Bell className="w-5 h-5 text-slate-400 group-hover:text-primary-500 transition-colors" />
+                  <span className="absolute top-3 right-3 w-2 h-2 bg-rose-500 rounded-full" />
+                </button>
             </div>
           </div>
         </header>

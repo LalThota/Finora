@@ -106,3 +106,12 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 .custom-tooltip {
   @apply glass p-4 rounded-2xl shadow-2xl border-none outline-none;
 }
+/* Hide Native Date Picker Icon */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  @apply opacity-0 absolute inset-0 cursor-pointer;
+}
+
+input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-clear-button {
+  display: none;
+}

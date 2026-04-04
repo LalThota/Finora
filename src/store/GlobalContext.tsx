@@ -142,7 +142,8 @@ export const GlobalProvider = ({ children }) => {
       result = result.filter(t => 
         t.description.toLowerCase().includes(search) || 
         t.category.toLowerCase().includes(search) ||
-        t.amount.toString().includes(search)
+        t.amount.toString().includes(search) ||
+        t.date.includes(search)
       );
     }
 

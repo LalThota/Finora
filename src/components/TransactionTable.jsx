@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, Filter, ArrowUp, ArrowDown, MoreVertical, 
-  Trash2, Edit3, Plus, X, Download, ChevronLeft, ChevronRight
+  Trash2, Edit3, Plus, X, Download, ChevronLeft, ChevronRight, Shield,
+  CreditCard, TrendingUp, Calendar
 } from 'lucide-react';
 import { useGlobalContext } from '../store/GlobalContext';
 import { CATEGORIES } from '../data/mockData';
@@ -141,82 +142,95 @@ const TransactionTable = () => {
   return (
     <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-slate-800/50 overflow-hidden">
       {/* Table Header / Controls */}
-      <div className="p-4 md:p-8 border-b border-slate-200 dark:border-slate-800/60 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
-        <div>
-          <h4 className="text-2xl font-black text-slate-900 dark:text-white font-heading tracking-tight">
-            Transactions
-          </h4>
-          <p className="text-xs text-slate-400 font-medium mt-1">Manage your incoming and outgoing capital</p>
-        </div>
-        
-        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3">
-          <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input 
-              type="text" 
-              placeholder="Search data..."
-              className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-transparent focus:border-primary-500/30 focus:ring-4 focus:ring-primary-500/5 text-sm text-slate-700 dark:text-slate-200 transition-all outline-none"
-              value={filters.searchTerm}
-              onChange={(e) => setFilters(prev => ({ ...prev, searchTerm: e.target.value }))}
-            />
+      <div className="p-5 sm:p-8 border-b border-slate-200 dark:border-slate-800/60 transition-all">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
+          <div>
+            <h4 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 dark:text-white font-heading tracking-tight flex items-center gap-3 lowercase">
+              <CreditCard className="w-6 h-6 text-primary-500" />
+              Transactions
+            </h4>
+            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Movement of capital</p>
           </div>
-
-          <div className="flex items-center gap-2">
-            <select 
-              className="flex-1 px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-transparent focus:border-primary-500/30 text-sm text-slate-700 dark:text-slate-200 transition-all outline-none cursor-pointer"
-              value={filters.category}
-              onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
-            >
-              <option value="All">All Categories</option>
-              {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-            </select>
-
-            <select 
-              className="flex-1 px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-transparent focus:border-primary-500/30 text-sm text-slate-700 dark:text-slate-200 transition-all outline-none cursor-pointer"
-              value={filters.type}
-              onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value }))}
-            >
-              <option value="All">All Types</option>
-              <option value="Income">Income</option>
-              <option value="Expense">Expense</option>
-            </select>
-
-            <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/50 rounded-2xl px-2">
-              <input 
-                type="date"
-                className="px-2 py-3 bg-transparent border-none text-sm text-slate-700 dark:text-slate-200 outline-none w-32"
-                value={filters.startDate}
-                onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value }))}
-                title="Start Date"
-              />
-              <span className="text-slate-400">-</span>
-              <input 
-                type="date"
-                className="px-2 py-3 bg-transparent border-none text-sm text-slate-700 dark:text-slate-200 outline-none w-32"
-                value={filters.endDate}
-                onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}
-                title="End Date"
-              />
-            </div>
-
-            <button 
-              onClick={exportToCSV}
-              className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 hover:text-primary-500 hover:bg-primary-500/5 transition-all border border-transparent hover:border-primary-500/20"
-            >
-              <Download className="w-5 h-5" />
-              <span className="text-sm font-bold">Export CSV</span>
-            </button>
-          </div>
-
+          
           {role === 'Admin' && (
             <button 
               onClick={() => handleOpenModal()}
-              className="flex items-center justify-center px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-2xl font-black text-sm shadow-xl shadow-primary-500/20 active:scale-95 transition-all"
+              className="flex items-center justify-center px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary-500/25 active:scale-95 transition-all w-full lg:w-auto"
             >
               <Plus className="w-5 h-5 mr-2" />
               Add Record
             </button>
           )}
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-12 gap-4">
+          <div className="relative xl:col-span-4">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-500" />
+            <input 
+              type="text" 
+              placeholder="Search data logs..."
+              className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border-2 border-transparent focus:border-primary-500/20 focus:ring-4 focus:ring-primary-500/5 text-sm text-slate-700 dark:text-slate-200 transition-all outline-none font-bold placeholder:text-slate-300 dark:placeholder:text-slate-700"
+              value={filters.searchTerm}
+              onChange={(e) => setFilters(prev => ({ ...prev, searchTerm: e.target.value }))}
+            />
+          </div>
+
+          <div className="flex items-center gap-4 xl:col-span-3">
+            <div className="relative flex-1">
+               <select 
+                className="w-full pl-4 pr-10 py-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border-2 border-transparent focus:border-primary-500/20 text-sm font-bold text-slate-700 dark:text-slate-200 transition-all outline-none cursor-pointer appearance-none"
+                value={filters.category}
+                onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
+              >
+                <option value="All">All Categories</option>
+                {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+              </select>
+              <Filter className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+            </div>
+
+            <div className="relative flex-1">
+              <select 
+                className="w-full pl-4 pr-10 py-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border-2 border-transparent focus:border-primary-500/20 text-sm font-bold text-slate-700 dark:text-slate-200 transition-all outline-none cursor-pointer appearance-none"
+                value={filters.type}
+                onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value }))}
+              >
+                <option value="All">All Types</option>
+                <option value="Income">Income</option>
+                <option value="Expense">Expense</option>
+              </select>
+              <TrendingUp className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+            </div>
+          </div>
+
+          <div className="flex flex-col min-[450px]:flex-row items-stretch min-[450px]:items-center gap-3 xl:col-span-5">
+            <div className="flex-1 flex items-center gap-2 bg-slate-50 dark:bg-slate-900/50 rounded-2xl px-4 border-2 border-transparent p-0.5">
+              <Calendar className="w-4 h-4 text-primary-500 flex-shrink-0" />
+              <input 
+                type="date"
+                className="flex-1 py-4 bg-transparent border-none text-xs font-bold text-slate-700 dark:text-slate-200 outline-none uppercase"
+                value={filters.startDate}
+                onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value }))}
+                title="Log Start"
+              />
+              <span className="text-slate-300 dark:text-slate-700 font-bold">-</span>
+              <input 
+                type="date"
+                className="flex-1 py-4 bg-transparent border-none text-xs font-bold text-slate-700 dark:text-slate-200 outline-none uppercase"
+                value={filters.endDate}
+                onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}
+                title="Log End"
+              />
+            </div>
+
+            <button 
+              onClick={exportToCSV}
+              className="flex-shrink-0 flex items-center justify-center gap-2 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 text-slate-500 hover:text-primary-500 hover:bg-primary-500/5 transition-all border-2 border-transparent hover:border-primary-500/10 shadow-sm"
+              title="Export Statement"
+            >
+              <Download className="w-5 h-5" />
+              <span className="xl:hidden block text-xs font-black uppercase tracking-widest">Export CSV</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -250,12 +264,22 @@ const TransactionTable = () => {
           </thead>
           <tbody className={twMerge("divide-y divide-slate-100 dark:divide-slate-800/60 relative", isLoading && "opacity-40 pointer-events-none")}>
             {isLoading && (
-              <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/10 backdrop-blur-[1px]">
-                <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
-              </div>
+              <tr>
+                <td colSpan={6} className="relative h-20">
+                  <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/10 backdrop-blur-[1px]">
+                    <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
+                  </div>
+                </td>
+              </tr>
             )}
-            {paginatedTransactions.map((t) => (
-              <tr key={t.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-all group">
+            {paginatedTransactions.map((t, idx) => (
+              <motion.tr 
+                key={t.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.05 }}
+                className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-all group"
+              >
                 <td className="px-4 md:px-8 py-5 text-sm text-slate-500 dark:text-slate-400 font-medium hidden sm:table-cell">
                   {format(new Date(t.date), 'MMM dd, yyyy')}
                 </td>
@@ -286,8 +310,8 @@ const TransactionTable = () => {
                 )}>
                   {t.type === 'Income' ? '+' : '-'}${new Intl.NumberFormat().format(t.amount)}
                 </td>
-                {role === 'Admin' && (
-                  <td className="px-4 md:px-8 py-5 text-right">
+                <td className="px-4 md:px-8 py-5 text-right">
+                  {role === 'Admin' ? (
                     <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button 
                         onClick={() => handleOpenModal(t)}
@@ -296,15 +320,23 @@ const TransactionTable = () => {
                         <Edit3 className="w-4 h-4" />
                       </button>
                       <button 
-                        onClick={() => deleteTransaction(t.id)}
+                        onClick={() => {
+                          if (window.confirm('Are you sure you want to delete this transaction?')) {
+                            deleteTransaction(t.id);
+                          }
+                        }}
                         className="p-2 rounded-xl hover:bg-rose-500/10 text-slate-400 hover:text-rose-500 transition-all"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
-                  </td>
-                )}
-              </tr>
+                  ) : (
+                    <div className="flex items-center justify-end" title="Admin access required">
+                      <Shield className="w-4 h-4 text-slate-300 dark:text-slate-700" />
+                    </div>
+                  )}
+                </td>
+              </motion.tr>
             ))}
           </tbody>
         </table>

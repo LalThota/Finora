@@ -129,33 +129,7 @@ const Sidebar = () => {
               <span className="text-sm">Help Center</span>
             </button>
 
-            {/* Role Switcher */}
-            <div className="p-1.5 rounded-2xl bg-slate-100/50 dark:bg-slate-800/50 flex items-center gap-1">
-              <button
-                onClick={() => setRole('Admin')}
-                className={twMerge(
-                  "flex-1 py-1.5 px-1 rounded-xl flex items-center justify-center gap-2 transition-all",
-                  role === 'Admin' 
-                    ? "bg-white dark:bg-slate-700 text-primary-600 dark:text-white shadow-sm font-bold" 
-                    : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                )}
-              >
-                <Shield className="w-4 h-4" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Admin</span>
-              </button>
-              <button
-                onClick={() => setRole('Viewer')}
-                className={twMerge(
-                  "flex-1 py-1.5 px-1 rounded-xl flex items-center justify-center gap-2 transition-all",
-                  role === 'Viewer' 
-                    ? "bg-white dark:bg-slate-700 text-primary-600 dark:text-white shadow-sm font-bold" 
-                    : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                )}
-              >
-                <Eye className="w-4 h-4" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Viewer</span>
-              </button>
-            </div>
+
 
             <div className="flex items-center gap-3 p-3 rounded-[1.5rem] bg-slate-900 dark:bg-slate-800 text-white shadow-xl">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-primary-600 flex items-center justify-center font-bold text-sm shadow-inner group cursor-pointer overflow-hidden">
