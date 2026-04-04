@@ -228,7 +228,7 @@ const TransactionTable = () => {
               title="Export Statement"
             >
               <Download className="w-5 h-5" />
-              <span className="xl:hidden block text-xs font-black uppercase tracking-widest">Export CSV</span>
+              <span className="block text-xs font-black uppercase tracking-widest">Export CSV</span>
             </button>
           </div>
         </div>
