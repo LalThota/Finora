@@ -11,12 +11,16 @@ import TransactionTable from '../components/TransactionTable';
 import Insights from '../components/Insights';
 import BudgetProgress from '../components/BudgetProgress';
 import Sidebar from '../components/Sidebar';
-import { useApp } from '../context/AppContext';
+import { useGlobalContext } from '../store/GlobalContext';
 import { format } from 'date-fns';
 import { twMerge } from 'tailwind-merge';
 
 const Dashboard = () => {
-  const { stats, role, activeView, userProfile, setUserProfile, notifications, setNotifications, setShowMobileMenu, toast } = useApp();
+  const { stats, role, activeView, userProfile, setUserProfile, notifications, setNotifications, setShowMobileMenu, toast, isGlobalLoading } = useGlobalContext();
+
+  const savingsRate = stats.totalIncome > 0 
+    ? ((stats.totalIncome - stats.totalExpenses) / stats.totalIncome * 100).toFixed(1)
+    : 0;
 
   const renderContent = () => {
     switch(activeView) {
@@ -29,13 +33,14 @@ const Dashboard = () => {
             className="space-y-8"
           >
             {/* Summary Cards */}
-            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
               <SummaryCard 
                 title="Total Balance" 
                 value={stats.balance} 
                 type="balance" 
                 trend={+12.4} 
                 icon={Wallet} 
+                isLoading={isGlobalLoading}
               />
               <SummaryCard 
                 title="Monthly Income" 
@@ -43,6 +48,7 @@ const Dashboard = () => {
                 type="income" 
                 trend={+8.2} 
                 icon={TrendingUp} 
+                isLoading={isGlobalLoading}
               />
               <SummaryCard 
                 title="Monthly Expenses" 
@@ -50,6 +56,16 @@ const Dashboard = () => {
                 type="expense" 
                 trend={-4.1} 
                 icon={TrendingDown} 
+                isLoading={isGlobalLoading}
+              />
+              <SummaryCard 
+                title="Savings Rate (%)" 
+                value={savingsRate} 
+                type="balance" 
+                trend={+2.1} 
+                icon={Zap} 
+                isLoading={isGlobalLoading}
+                isPercentage={true}
               />
             </section>
 

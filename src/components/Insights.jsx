@@ -1,11 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useApp } from '../context/AppContext';
+import { useGlobalContext } from '../store/GlobalContext';
 import { Zap, AlertTriangle, CheckCircle2, TrendingDown, TrendingUp } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 
 const Insights = () => {
-  const { transactions, stats, budgets } = useApp();
+  const { transactions, stats, budgets } = useGlobalContext();
 
   const insights = React.useMemo(() => {
     const expenses = transactions.filter(t => t.type === 'Expense');
@@ -16,7 +16,8 @@ const Insights = () => {
       return acc;
     }, {});
 
-    const topCategory = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1])[0];
+    const categoryTotalsArray = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]);
+    const topCategory = categoryTotalsArray.length > 0 ? categoryTotalsArray[0] : null;
 
     const savingsRate = stats.totalIncome > 0 
       ? ((stats.totalIncome - stats.totalExpenses) / stats.totalIncome * 100).toFixed(1)
@@ -24,29 +25,45 @@ const Insights = () => {
 
     const list = [
       {
-        title: 'Alpha AI Forecast',
-        value: `+$${new Intl.NumberFormat().format(stats.forecast.predictedBalance)}`,
-        description: `Projected growth: 5% income increase with 2% efficiency gain next month.`,
-        icon: Zap,
-        color: 'emerald'
-      },
-      {
+        title: 'Efficiency Score',
+        value: `${savingsRate}%`,
+        description: savingsRate > 20 
+          ? 'Exceptional. Your savings pattern is highly optimized this month.'
+          : 'Optimization required. Consider reducing fixed costs to boost savings trend.',
+        icon: CheckCircle2,
+        color: savingsRate > 20 ? 'emerald' : 'amber'
+      }
+    ];
+
+    if (topCategory) {
+      list.push({
         title: 'Top Expense',
         value: topCategory[0],
         description: `High impact detected. $${new Intl.NumberFormat().format(topCategory[1])} spent on ${topCategory[0]}.`,
         icon: AlertTriangle,
         color: 'rose'
-      },
-      {
-        title: 'Efficiency Score',
-        value: `${savingsRate}%`,
-        description: savingsRate > 20 
-          ? 'Exceptional. Your savings rate is in the top 5% of users.'
-          : 'Optimization required. Focus on reducing fixed costs.',
-        icon: CheckCircle2,
-        color: savingsRate > 20 ? 'emerald' : 'amber'
+      });
+      
+      const percentOfExpenses = ((topCategory[1] / stats.totalExpenses) * 100).toFixed(0);
+      if (percentOfExpenses > 30) {
+        list.push({
+          title: 'Smart Alert',
+          value: 'Spending Skew',
+          description: `${topCategory[0]} category exceeds ${percentOfExpenses}% of your total expenses. Consider reallocation.`,
+          icon: Zap,
+          color: 'amber'
+        });
       }
-    ];
+    }
+
+    // Mock Monthly comparison
+    list.push({
+      title: 'Monthly Comparison',
+      value: '+14%',
+      description: `You spent 14% more than last month. Adjust your budget limits.`,
+      icon: TrendingUp,
+      color: 'rose'
+    });
 
     // Budget Alerts
     budgets.forEach(b => {

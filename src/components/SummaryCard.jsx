@@ -3,10 +3,27 @@ import { motion } from 'framer-motion';
 import { ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 
-const SummaryCard = ({ title, value, type, trend, icon: Icon }) => {
+const SummaryCard = ({ title, value, type, trend, icon: Icon, isLoading, isPercentage }) => {
   const isIncome = type === 'income';
   const isExpense = type === 'expense';
   const isBalance = type === 'balance';
+
+  if (isLoading) {
+    return (
+      <div className="relative rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-8 glass overflow-hidden h-full">
+        <div className="animate-pulse flex flex-col h-full justify-between gap-5 sm:gap-8">
+          <div className="flex items-center justify-between">
+            <div className="w-10 h-10 rounded-2xl bg-slate-200 dark:bg-slate-800" />
+            <div className="w-16 h-6 rounded-xl bg-slate-200 dark:bg-slate-800" />
+          </div>
+          <div>
+            <div className="w-24 h-3 bg-slate-200 dark:bg-slate-800 rounded mb-3" />
+            <div className="w-32 h-8 bg-slate-200 dark:bg-slate-800 rounded" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -42,9 +59,9 @@ const SummaryCard = ({ title, value, type, trend, icon: Icon }) => {
             {title}
           </p>
           <div className="flex items-baseline gap-1">
-             <span className="text-[10px] sm:text-sm font-bold text-slate-400 dark:text-slate-500">$</span>
+             {!isPercentage && <span className="text-[10px] sm:text-sm font-bold text-slate-400 dark:text-slate-500">$</span>}
              <h3 className="text-2xl min-[360px]:text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tighter truncate">
-                {new Intl.NumberFormat().format(value)}
+                {isPercentage ? value : new Intl.NumberFormat().format(value)}{isPercentage && '%'}
              </h3>
           </div>
         </div>

@@ -1,11 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useApp } from '../context/AppContext';
+import { useGlobalContext } from '../store/GlobalContext';
 import { Wallet, Target } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 
 const BudgetProgress = () => {
-  const { transactions, budgets } = useApp();
+  const { transactions, budgets } = useGlobalContext();
 
   const progressData = React.useMemo(() => {
     const expenses = transactions.filter(t => t.type === 'Expense');

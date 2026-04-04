@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, Filter, ArrowUp, ArrowDown, MoreVertical, 
   Trash2, Edit3, Plus, X, Download, ChevronLeft, ChevronRight
 } from 'lucide-react';
-import { useApp } from '../context/AppContext';
+import { useGlobalContext } from '../store/GlobalContext';
 import { CATEGORIES } from '../data/mockData';
 import { format } from 'date-fns';
 import { clsx } from 'clsx';
@@ -12,10 +12,13 @@ import { twMerge } from 'tailwind-merge';
 
 const TransactionTable = () => {
   const { 
-    filteredTransactions, role, searchTerm, setSearchTerm, 
-    typeFilter, setTypeFilter, sortConfig, setSortConfig,
-    deleteTransaction, addTransaction, updateTransaction
-  } = useApp();
+    filteredTransactions, role, 
+    filters, setFilters,
+    sortField, setSortField,
+    sortOrder, setSortOrder,
+    deleteTransaction, addTransaction, updateTransaction,
+    categories
+  } = useGlobalContext();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -30,6 +33,11 @@ const TransactionTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
+
   const paginatedTransactions = filteredTransactions.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -77,10 +85,12 @@ const TransactionTable = () => {
   };
 
   const handleSort = (key) => {
-    setSortConfig(prev => ({
-      key,
-      direction: prev.key === key && prev.direction === 'desc' ? 'asc' : 'desc'
-    }));
+    if (sortField === key) {
+      setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc');
+    } else {
+      setSortField(key);
+      setSortOrder('desc'); // First click -> newest to oldest (descending)
+    }
   };
 
   const exportToCSV = () => {
@@ -107,8 +117,8 @@ const TransactionTable = () => {
   };
 
   const SortIcon = ({ column }) => {
-    if (sortConfig.key !== column) return null;
-    return sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4 ml-1" /> : <ArrowDown className="w-4 h-4 ml-1" />;
+    if (sortField !== column) return null;
+    return sortOrder === 'asc' ? <ArrowUp className="w-4 h-4 ml-1" /> : <ArrowDown className="w-4 h-4 ml-1" />;
   };
 
   return (
@@ -129,21 +139,48 @@ const TransactionTable = () => {
               type="text" 
               placeholder="Search data..."
               className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-transparent focus:border-primary-500/30 focus:ring-4 focus:ring-primary-500/5 text-sm text-slate-700 dark:text-slate-200 transition-all outline-none"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              value={filters.searchTerm}
+              onChange={(e) => setFilters(prev => ({ ...prev, searchTerm: e.target.value }))}
             />
           </div>
 
           <div className="flex items-center gap-2">
             <select 
               className="flex-1 px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-transparent focus:border-primary-500/30 text-sm text-slate-700 dark:text-slate-200 transition-all outline-none cursor-pointer"
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
+              value={filters.category}
+              onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
+            >
+              <option value="All">All Categories</option>
+              {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+            </select>
+
+            <select 
+              className="flex-1 px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-transparent focus:border-primary-500/30 text-sm text-slate-700 dark:text-slate-200 transition-all outline-none cursor-pointer"
+              value={filters.type}
+              onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value }))}
             >
               <option value="All">All Types</option>
               <option value="Income">Income</option>
               <option value="Expense">Expense</option>
             </select>
+
+            <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/50 rounded-2xl px-2">
+              <input 
+                type="date"
+                className="px-2 py-3 bg-transparent border-none text-sm text-slate-700 dark:text-slate-200 outline-none w-32"
+                value={filters.startDate}
+                onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value }))}
+                title="Start Date"
+              />
+              <span className="text-slate-400">-</span>
+              <input 
+                type="date"
+                className="px-2 py-3 bg-transparent border-none text-sm text-slate-700 dark:text-slate-200 outline-none w-32"
+                value={filters.endDate}
+                onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}
+                title="End Date"
+              />
+            </div>
 
             <button 
               onClick={exportToCSV}

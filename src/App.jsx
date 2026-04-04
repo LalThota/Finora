@@ -1,14 +1,14 @@
 import React from 'react';
-import { AppProvider } from './context/AppContext';
+import { GlobalProvider } from './store/GlobalContext';
 import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
-    <AppProvider>
+    <GlobalProvider>
       <div className="min-h-screen">
         <Dashboard />
       </div>
-    </AppProvider>
+    </GlobalProvider>
   );
 }
 

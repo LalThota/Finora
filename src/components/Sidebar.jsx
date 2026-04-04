@@ -4,11 +4,11 @@ import {
   BarChart3, LayoutDashboard, CreditCard, PieChart, 
   Settings, LogOut, Sun, Moon, Shield, Eye, HelpCircle, X
 } from 'lucide-react';
-import { useApp } from '../context/AppContext';
+import { useGlobalContext } from '../store/GlobalContext';
 import { twMerge } from 'tailwind-merge';
 
 const Sidebar = () => {
-  const { role, setRole, darkMode, setDarkMode, activeView, setActiveView, userProfile, showMobileMenu, setShowMobileMenu } = useApp();
+  const { role, setRole, darkMode, setDarkMode, activeView, setActiveView, userProfile, showMobileMenu, setShowMobileMenu } = useGlobalContext();
 
   const getInitials = (name) => name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 

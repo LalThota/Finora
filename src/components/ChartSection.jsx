@@ -4,7 +4,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend
 } from 'recharts';
-import { useApp } from '../context/AppContext';
+import { useGlobalContext } from '../store/GlobalContext';
 
 const COLORS = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#f43f5e', '#64748b'];
 
@@ -28,11 +28,11 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 const ChartSection = () => {
-  const { transactions, setSearchTerm, setActiveView } = useApp();
+  const { filteredTransactions: transactions, filters, setFilters, setActiveView } = useGlobalContext();
 
   const handleSliceClick = (data) => {
     if (data && data.name) {
-      setSearchTerm(data.name);
+      setFilters(prev => ({ ...prev, searchTerm: data.name }));
       setActiveView('Transactions');
     }
   };
