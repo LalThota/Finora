@@ -16,7 +16,7 @@ export const INITIAL_TRANSACTIONS = [
   {
     id: '1',
     date: format(new Date(), 'yyyy-MM-dd'),
-    amount: 1500,
+    amount: 1847.35,
     category: 'Income',
     type: 'Income',
     description: 'Freelance Monthly Payment'
@@ -32,7 +32,7 @@ export const INITIAL_TRANSACTIONS = [
   {
     id: '3',
     date: format(subDays(new Date(), 2), 'yyyy-MM-dd'),
-    amount: 120.00,
+    amount: 94.50,
     category: 'Shopping',
     type: 'Expense',
     description: 'New Backpack'
@@ -40,7 +40,7 @@ export const INITIAL_TRANSACTIONS = [
   {
     id: '4',
     date: format(subDays(new Date(), 2), 'yyyy-MM-dd'),
-    amount: 2500,
+    amount: 2463.00,
     category: 'Income',
     type: 'Income',
     description: 'Salary Deposit'
@@ -48,7 +48,7 @@ export const INITIAL_TRANSACTIONS = [
   {
     id: '5',
     date: format(subDays(new Date(), 3), 'yyyy-MM-dd'),
-    amount: 300.00,
+    amount: 284.75,
     category: 'Investment',
     type: 'Expense',
     description: 'Stock Purchase'
@@ -56,7 +56,7 @@ export const INITIAL_TRANSACTIONS = [
   {
     id: '6',
     date: format(subDays(new Date(), 4), 'yyyy-MM-dd'),
-    amount: 85.00,
+    amount: 78.20,
     category: 'Utilities',
     type: 'Expense',
     description: 'Electricity Bill'
@@ -64,7 +64,7 @@ export const INITIAL_TRANSACTIONS = [
   {
     id: '7',
     date: format(subDays(new Date(), 5), 'yyyy-MM-dd'),
-    amount: 15.00,
+    amount: 13.99,
     category: 'Entertainment',
     type: 'Expense',
     description: 'Netflix Subscription'
@@ -72,18 +72,10 @@ export const INITIAL_TRANSACTIONS = [
   {
     id: '8',
     date: format(subDays(new Date(), 6), 'yyyy-MM-dd'),
-    amount: 50.00,
+    amount: 58.40,
     category: 'Transport',
     type: 'Expense',
     description: 'Fuel Refill'
-  },
-  {
-    id: '9',
-    date: format(subDays(new Date(), 7), 'yyyy-MM-dd'),
-    amount: 200.00,
-    category: 'Health',
-    type: 'Expense',
-    description: 'Gym Membership'
   },
   {
     id: '10',
@@ -96,7 +88,7 @@ export const INITIAL_TRANSACTIONS = [
   {
     id: '11',
     date: format(subDays(new Date(), 10), 'yyyy-MM-dd'),
-    amount: 500.00,
+    amount: 487.35,
     category: 'Income',
     type: 'Income',
     description: 'Dividend Payout'
@@ -104,7 +96,7 @@ export const INITIAL_TRANSACTIONS = [
   {
     id: '12',
     date: format(subDays(new Date(), 11), 'yyyy-MM-dd'),
-    amount: 220.00,
+    amount: 213.80,
     category: 'Transport',
     type: 'Expense',
     description: 'Flight Booking'

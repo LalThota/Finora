@@ -62,7 +62,7 @@ const SummaryCard = ({ title, value, type, trend, icon: Icon, isLoading, isPerce
           <div className="flex items-baseline gap-1">
              {!isPercentage && <span className="text-[10px] sm:text-sm font-bold text-slate-400 dark:text-slate-500">$</span>}
              <h3 className="text-2xl min-[360px]:text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tighter truncate">
-                {isPercentage ? value : new Intl.NumberFormat().format(value)}{isPercentage && '%'}
+                {isPercentage ? value : Number(value).toFixed(2)}{isPercentage && '%'}
              </h3>
           </div>
         </div>

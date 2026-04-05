@@ -40,8 +40,8 @@ const Insights = () => {
       title: 'MoM Comparison',
       value: isProfitable ? 'Surplus' : 'Deficit',
       description: isUp 
-        ? `You generated $${Math.abs(currentSurplus - prevSurplus).toFixed(0)} more in surplus than last month.`
-        : `Your net position decreased by $${Math.abs(currentSurplus - prevSurplus).toFixed(0)} compared to last period.`,
+        ? `You generated $${Math.abs(currentSurplus - prevSurplus).toFixed(2)} more in surplus than last month.`
+        : `Your net position decreased by $${Math.abs(currentSurplus - prevSurplus).toFixed(2)} compared to last period.`,
       icon: isUp ? TrendingUp : TrendingDown,
       color: isProfitable ? 'emerald' : 'rose'
     });
@@ -57,7 +57,7 @@ const Insights = () => {
       progressValue: Math.min(100, savingsRate),
       description: `Your internal savings rate is ${savingsRate.toFixed(1)}%. Aim for 20% to build your safety net.`,
       icon: CheckCircle2,
-      color: savingsRate >= 20 ? 'emerald' : 'amber'
+      color: savingsRate >= 20 ? 'emerald' : 'rose'
     });
 
     // 4. Biggest single transaction with date and category
@@ -65,8 +65,10 @@ const Insights = () => {
       const biggest = [...transactions].sort((a, b) => parseFloat(b.amount) - parseFloat(a.amount))[0];
       list.push({
         title: 'Biggest Transaction',
-        value: `$${new Intl.NumberFormat().format(biggest.amount)}`,
-        description: `This was spent on ${biggest.category} on ${format(new Date(biggest.date), 'MMMM dd')}.`,
+        value: `$${Number(biggest.amount).toFixed(2)}`,
+        showBadge: true,
+        badgeText: biggest.category,
+        description: `Your largest single outflow: "${biggest.description}" recorded on ${format(new Date(biggest.date), 'MMMM dd')}.`,
         icon: Zap,
         color: 'primary'
       });
@@ -122,9 +124,15 @@ const Insights = () => {
                       <span className="px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-500 text-[10px] font-black">{insight.percentage}</span>
                     )}
                   </div>
-                  <h5 className="text-3xl font-black text-slate-900 dark:text-white font-heading tracking-tight mb-3">
+                  <h5 className="text-2xl font-black text-slate-900 dark:text-white font-heading tracking-tight mb-2">
                     {insight.value}
                   </h5>
+
+                  {insight.showBadge && (
+                    <div className="mb-4">
+                       <span className="px-2 py-1 rounded-lg bg-slate-100 dark:bg-white/10 text-[10px] font-black text-slate-500 dark:text-slate-300 uppercase tracking-widest">{insight.badgeText}</span>
+                    </div>
+                  )}
 
                   {insight.showProgress && (
                     <div className="mb-4 h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -134,13 +142,14 @@ const Insights = () => {
                         transition={{ duration: 1.5, delay: 0.5 }}
                         className={twMerge(
                           "h-full rounded-full",
-                          insight.color === 'emerald' ? "bg-emerald-500" : "bg-amber-500"
+                          insight.color === 'emerald' ? "bg-emerald-500" : 
+                          insight.color === 'rose' ? "bg-rose-500" : "bg-primary-500"
                         )}
                       />
                     </div>
                   )}
 
-                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400 leading-relaxed max-w-[90%]">
+                  <p className="text-xs font-bold text-slate-500 dark:text-slate-400 leading-relaxed">
                     {insight.description}
                   </p>
                 </div>

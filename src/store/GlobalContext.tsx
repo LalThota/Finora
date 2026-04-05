@@ -3,7 +3,7 @@ import { INITIAL_TRANSACTIONS, CATEGORIES } from '../data/mockData';
 
 const GlobalContext = createContext<any>(null);
 
-export const GlobalProvider = ({ children }) => {
+export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
   const [transactions, setTransactions] = useState(() => {
     const saved = localStorage.getItem('finora_transactions');
     return saved ? JSON.parse(saved) : INITIAL_TRANSACTIONS;
@@ -74,19 +74,19 @@ export const GlobalProvider = ({ children }) => {
   const addTransaction = (transaction: any) => {
     if (role !== 'Admin') return;
     setTransactions((prev: any[]) => [{ ...transaction, id: Date.now().toString() }, ...prev]);
-    showToast('Transaction added', 'success');
+    showToast('Success: Transaction Added', 'success');
   };
 
   const updateTransaction = (id: string, updatedData: any) => {
     if (role !== 'Admin') return;
     setTransactions((prev: any[]) => prev.map((t: any) => t.id === id ? { ...t, ...updatedData } : t));
-    showToast('Changes saved', 'success');
+    showToast('Success: Transaction Updated', 'success');
   };
 
   const deleteTransaction = (id: string) => {
     if (role !== 'Admin') return;
     setTransactions((prev: any[]) => prev.filter((t: any) => t.id !== id));
-    showToast('Record deleted', 'info');
+    showToast('Warning: Transaction Deleted', 'delete');
   };
 
   const stats = useMemo(() => {

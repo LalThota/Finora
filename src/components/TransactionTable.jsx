@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, Filter, ArrowUp, ArrowDown, MoreVertical, 
   Trash2, Edit3, Plus, X, Download, ChevronLeft, ChevronRight, Shield,
-  CreditCard, TrendingUp, Calendar
+  CreditCard, TrendingUp, Calendar, AlertTriangle
 } from 'lucide-react';
 import { useGlobalContext } from '../store/GlobalContext';
 import { CATEGORIES } from '../data/mockData';
@@ -34,21 +34,34 @@ const TransactionTable = () => {
   });
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 10;
   const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
 
   useEffect(() => {
     setIsLoading(true);
     const timer = setTimeout(() => {
       setIsLoading(false);
       setCurrentPage(1);
-    }, 400);
+    }, 800); // Shimmer duration
     return () => clearTimeout(timer);
   }, [filters]);
 
   const paginatedTransactions = filteredTransactions.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
+  );
+
+  const SkeletonRow = () => (
+    <tr className="animate-pulse">
+      <td className="px-4 md:px-8 py-5 hidden sm:table-cell"><div className="h-4 w-20 bg-slate-200 dark:bg-slate-800 rounded-lg"></div></td>
+      <td className="px-4 md:px-8 py-5"><div className="h-4 w-40 bg-slate-200 dark:bg-slate-800 rounded-lg mb-2"></div><div className="h-3 w-20 bg-slate-100 dark:bg-slate-900 rounded-lg md:hidden"></div></td>
+      <td className="px-4 md:px-8 py-5 hidden md:table-cell"><div className="h-4 w-24 bg-slate-200 dark:bg-slate-800 rounded-lg"></div></td>
+      <td className="px-4 md:px-8 py-5"><div className="h-4 w-16 bg-slate-200 dark:bg-slate-800 rounded-lg"></div></td>
+      <td className="px-4 md:px-8 py-5 text-right md:text-left"><div className="h-4 w-20 bg-slate-200 dark:bg-slate-800 rounded-lg ml-auto md:ml-0"></div></td>
+      <td className="px-4 md:px-8 py-5 text-right"><div className="h-8 w-8 bg-slate-200 dark:bg-slate-800 rounded-xl ml-auto"></div></td>
+    </tr>
   );
 
   const handleOpenModal = (t = null) => {
@@ -164,12 +177,12 @@ const TransactionTable = () => {
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-12 gap-4">
-          <div className="relative xl:col-span-4">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-500" />
+          <div className="relative xl:col-span-4 w-full">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary-500" />
             <input 
               type="text" 
-              placeholder="Search data logs..."
-              className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border-2 border-transparent focus:border-primary-500/20 focus:ring-4 focus:ring-primary-500/5 text-sm text-slate-700 dark:text-slate-200 transition-all outline-none font-bold placeholder:text-slate-300 dark:placeholder:text-slate-700"
+              placeholder="Search detailed logs..."
+              className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 focus:border-primary-500/20 focus:ring-4 focus:ring-primary-500/5 text-sm text-slate-700 dark:text-slate-200 transition-all outline-none font-bold placeholder:text-slate-300 dark:placeholder:text-slate-700 shadow-inner"
               value={filters.searchTerm}
               onChange={(e) => setFilters(prev => ({ ...prev, searchTerm: e.target.value }))}
             />
@@ -224,14 +237,16 @@ const TransactionTable = () => {
               />
             </div>
 
-            <button 
-              onClick={exportToCSV}
-              className="flex-shrink-0 flex items-center justify-center gap-2 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 text-slate-500 hover:text-primary-500 hover:bg-primary-500/5 transition-all border-2 border-transparent hover:border-primary-500/10 shadow-sm"
-              title="Export Statement"
-            >
-              <Download className="w-5 h-5" />
-              <span className="block text-xs font-black uppercase tracking-widest">Export CSV</span>
-            </button>
+            {role === 'Admin' && (
+              <button 
+                onClick={exportToCSV}
+                className="flex-shrink-0 flex items-center justify-center gap-2 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 text-slate-500 hover:text-primary-500 hover:bg-primary-500/5 transition-all border-2 border-slate-200 dark:border-slate-800 hover:border-primary-500/10 shadow-sm"
+                title="Export Statement"
+              >
+                <Download className="w-5 h-5" />
+                <span className="block text-xs font-black uppercase tracking-widest">Export CSV</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -264,23 +279,16 @@ const TransactionTable = () => {
               {role === 'Admin' && <th className="px-4 md:px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>}
             </tr>
           </thead>
-          <tbody className={twMerge("divide-y divide-slate-100 dark:divide-slate-800/60 relative", isLoading && "opacity-40 pointer-events-none")}>
-            {isLoading && (
-              <tr>
-                <td colSpan={6} className="relative h-20">
-                  <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/10 backdrop-blur-[1px]">
-                    <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
-                  </div>
-                </td>
-              </tr>
-            )}
-            {paginatedTransactions.map((t, idx) => (
+          <tbody className={twMerge("divide-y divide-slate-100 dark:divide-slate-800/60 transition-all", isLoading && "opacity-50")}>
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
+            ) : paginatedTransactions.map((t, idx) => (
               <motion.tr 
                 key={t.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.05 }}
-                className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-all group"
+                className="hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group"
               >
                 <td className="px-4 md:px-8 py-5 text-sm text-slate-500 dark:text-slate-400 font-medium hidden sm:table-cell">
                   {format(new Date(t.date), 'MMM dd, yyyy')}
@@ -292,7 +300,7 @@ const TransactionTable = () => {
                   <p className="text-[10px] text-slate-400 font-bold md:hidden mt-0.5">{t.category}</p>
                 </td>
                 <td className="px-4 md:px-8 py-5 hidden md:table-cell">
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-slate-100/80 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
                     {t.category}
                   </span>
                 </td>
@@ -310,7 +318,7 @@ const TransactionTable = () => {
                   "px-4 md:px-8 py-5 text-sm font-black text-right md:text-left",
                   t.type === 'Income' ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
                 )}>
-                  {t.type === 'Income' ? '+' : '-'}${new Intl.NumberFormat().format(t.amount)}
+                  {t.type === 'Income' ? '+' : '-'}${Number(t.amount).toFixed(2)}
                 </td>
                 <td className="px-4 md:px-8 py-5 text-right">
                   {role === 'Admin' ? (
@@ -318,16 +326,14 @@ const TransactionTable = () => {
                       <button 
                         onClick={() => handleOpenModal(t)}
                         className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-primary-500 transition-all"
+                        title="Edit entry"
                       >
                         <Edit3 className="w-4 h-4" />
                       </button>
                       <button 
-                        onClick={() => {
-                          if (window.confirm('Are you sure you want to delete this transaction?')) {
-                            deleteTransaction(t.id);
-                          }
-                        }}
+                        onClick={() => setShowDeleteConfirm(t.id)}
                         className="p-2 rounded-xl hover:bg-rose-500/10 text-slate-400 hover:text-rose-500 transition-all"
+                        title="Delete entry"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -348,16 +354,16 @@ const TransactionTable = () => {
              <motion.div 
                initial={{ scale: 0.8, opacity: 0 }}
                animate={{ scale: 1, opacity: 1 }}
-               className="bg-slate-100 dark:bg-slate-800/50 w-24 h-24 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner"
+               className="bg-slate-100 dark:bg-slate-800/50 w-32 h-32 rounded-[2.5rem] flex items-center justify-center mb-8 shadow-inner"
              >
-               <X className="w-10 h-10 text-slate-300 dark:text-slate-600" />
+               <AlertTriangle className="w-12 h-12 text-slate-300 dark:text-slate-600" />
              </motion.div>
-             <h5 className="text-2xl font-black text-slate-900 dark:text-white font-heading">No transactions yet</h5>
-             <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-xs mx-auto font-medium">Add your first record or try adjusting your filters to see some activity!</p>
+             <h5 className="text-2xl font-black text-slate-900 dark:text-white font-heading">No transactions found</h5>
+             <p className="text-sm text-slate-500 dark:text-slate-400 mt-3 max-w-sm mx-auto font-medium leading-relaxed">Try adjusting your filters or switch to Admin to add records. We couldn't find any financial logs matching your current parameters.</p>
              {role === 'Admin' && (
                 <button 
                   onClick={() => handleOpenModal()}
-                  className="mt-8 px-8 py-3.5 bg-primary-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary-500/20 hover:scale-105 active:scale-95 transition-all"
+                  className="mt-10 px-10 py-4 bg-primary-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary-500/20 hover:scale-105 active:scale-95 transition-all"
                 >
                   Create Transaction
                 </button>
@@ -368,37 +374,25 @@ const TransactionTable = () => {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="p-6 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-          <p className="text-sm text-slate-500">
-            Showing <span className="font-medium">{(currentPage-1)*itemsPerPage+1}</span> to <span className="font-medium">{Math.min(currentPage*itemsPerPage, filteredTransactions.length)}</span> of <span className="font-medium">{filteredTransactions.length}</span> results
+        <div className="p-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-sm font-bold text-slate-500 dark:text-slate-500 uppercase tracking-widest text-[10px]">
+            Page <span className="text-primary-500">{currentPage}</span> of {totalPages}
           </p>
           <div className="flex items-center space-x-2">
             <button 
               disabled={currentPage === 1}
               onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-              className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 disabled:opacity-50 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-slate-100 dark:border-slate-800 disabled:opacity-30 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-400"
             >
               <ChevronLeft className="w-4 h-4" />
+              Prev
             </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={twMerge(
-                  "w-8 h-8 rounded-lg text-sm font-medium transition-colors",
-                  currentPage === page 
-                    ? "bg-primary-600 text-white"
-                    : "hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400"
-                )}
-              >
-                {page}
-              </button>
-            ))}
             <button 
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-              className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 disabled:opacity-50 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-slate-100 dark:border-slate-800 disabled:opacity-30 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-400"
             >
+              Next
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
@@ -408,22 +402,22 @@ const TransactionTable = () => {
       {/* Transaction Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+              className="absolute inset-0 bg-slate-950/40 backdrop-blur-md"
               onClick={() => setIsModalOpen(false)}
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl p-8 overflow-hidden"
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl p-8 overflow-hidden border border-slate-100 dark:border-slate-800"
             >
               <div className="flex items-center justify-between mb-8">
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
+                <h3 className="text-2xl font-black text-slate-900 dark:text-white font-heading">
                   {editingId ? 'Edit Transaction' : 'New Transaction'}
                 </h3>
                 <button 
@@ -437,9 +431,9 @@ const TransactionTable = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Type</label>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Type</label>
                     <select 
-                      className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-primary-500 transition-all text-slate-900 dark:text-white"
+                      className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-primary-500 transition-all text-slate-900 dark:text-white appearance-none cursor-pointer"
                       value={formData.type}
                       onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                     >
@@ -448,7 +442,7 @@ const TransactionTable = () => {
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Date</label>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Date</label>
                     <input 
                       type="date"
                       required
@@ -461,12 +455,12 @@ const TransactionTable = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Description</label>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Description</label>
                   <input 
                     type="text"
                     required
                     placeholder="e.g. Weekly Grocery Shopping"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-primary-500 transition-all text-slate-900 dark:text-white placeholder:text-slate-400"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-primary-500 transition-all text-slate-900 dark:text-white placeholder:text-slate-400 font-medium"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   />
@@ -474,21 +468,21 @@ const TransactionTable = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Amount ($)</label>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Amount ($)</label>
                     <input 
                       type="number"
                       required
                       step="0.01"
                       placeholder="0.00"
-                      className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-primary-500 transition-all text-slate-900 dark:text-white"
+                      className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-primary-500 transition-all text-slate-900 dark:text-white font-bold"
                       value={formData.amount}
                       onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Category</label>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Category</label>
                     <select 
-                      className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-primary-500 transition-all text-slate-900 dark:text-white"
+                      className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-primary-500 transition-all text-slate-900 dark:text-white appearance-none cursor-pointer"
                       value={formData.category}
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     >
@@ -499,11 +493,58 @@ const TransactionTable = () => {
 
                 <button 
                   type="submit"
-                  className="w-full py-4 mt-4 bg-primary-600 hover:bg-primary-700 text-white rounded-2xl font-bold shadow-xl shadow-primary-500/25 transition-all active:scale-[0.98]"
+                  className="w-full py-4 mt-6 bg-primary-600 hover:bg-primary-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary-500/25 transition-all active:scale-[0.98]"
                 >
                   {editingId ? 'Save Changes' : 'Create Transaction'}
                 </button>
               </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-slate-950/40 backdrop-blur-md"
+              onClick={() => setShowDeleteConfirm(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl p-8 overflow-hidden border border-slate-100 dark:border-slate-800"
+            >
+              <div className="w-16 h-16 bg-rose-500/10 rounded-2xl flex items-center justify-center mb-6">
+                <Trash2 className="w-8 h-8 text-rose-500" />
+              </div>
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white font-heading mb-2">Delete Transaction</h3>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-8">
+                Are you sure you want to delete this transaction? This action <span className="text-rose-500 font-bold uppercase">cannot be undone</span>.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button 
+                  onClick={() => setShowDeleteConfirm(null)}
+                  className="flex-1 px-8 py-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-2xl font-black text-xs uppercase tracking-widest transition-all"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={() => {
+                    deleteTransaction(showDeleteConfirm);
+                    setShowDeleteConfirm(null);
+                  }}
+                  className="flex-1 px-8 py-4 bg-rose-500 hover:bg-rose-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-rose-500/20 active:scale-95 transition-all"
+                >
+                  Confirm Delete
+                </button>
+              </div>
             </motion.div>
           </div>
         )}

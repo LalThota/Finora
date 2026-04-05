@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Wallet, TrendingUp, TrendingDown, Bell, 
   Calendar, Search, Filter, ArrowUpRight, 
-  MoreHorizontal, ChevronRight, Zap, Menu
+  MoreHorizontal, ChevronRight, Zap, Menu, Sun, Moon
 } from 'lucide-react';
 import SummaryCard from '../components/SummaryCard';
 import ChartSection from '../components/ChartSection';
@@ -16,7 +16,11 @@ import { format } from 'date-fns';
 import { twMerge } from 'tailwind-merge';
 
 const Dashboard = () => {
-  const { stats, role, setRole, activeView, userProfile, setUserProfile, notifications, setNotifications, setShowMobileMenu, toast, isGlobalLoading } = useGlobalContext();
+  const { 
+    stats, role, setRole, activeView, userProfile, setUserProfile, 
+    notifications, setNotifications, setShowMobileMenu, toast, 
+    isGlobalLoading, darkMode, setDarkMode 
+  } = useGlobalContext();
 
   const savingsRate = stats.totalIncome > 0 
     ? ((stats.totalIncome - stats.totalExpenses) / stats.totalIncome * 100).toFixed(1)
@@ -253,25 +257,25 @@ const Dashboard = () => {
 
             {/* Contact Details */}
             <div className="lg:col-span-2 space-y-8">
-              <div className="glass rounded-[2.5rem] p-8 space-y-6 shadow-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white border-none">
-                <h4 className="text-xl font-black font-heading tracking-tight">Direct Access</h4>
+              <div className="glass rounded-[2.5rem] p-8 space-y-6 shadow-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                <h4 className="text-xl font-black font-heading tracking-tight text-slate-900 dark:text-white">Direct Access</h4>
                 <div className="space-y-6">
                   <div className="flex items-center gap-4 group">
-                    <div className="p-4 rounded-2xl bg-white/10 text-emerald-400 group-hover:scale-110 transition-transform">
+                    <div className="p-4 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
                       <Zap className="w-6 h-6" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Administrative Lead</p>
-                      <p className="text-lg font-bold">admin@nexuspay.com</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Administrative Lead</p>
+                      <p className="text-lg font-bold text-slate-900 dark:text-slate-100">admin@finora-intel.com</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4 group">
-                    <div className="p-4 rounded-2xl bg-white/10 text-primary-400 group-hover:scale-110 transition-transform">
+                    <div className="p-4 rounded-2xl bg-primary-500/10 text-primary-600 dark:text-primary-400 group-hover:scale-110 transition-transform">
                       <Search className="w-6 h-6" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Global Queries</p>
-                      <p className="text-lg font-bold">+1 (800) 555-0199</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Global Queries</p>
+                      <p className="text-lg font-bold text-slate-900 dark:text-slate-100">+1 (800) 555-0199</p>
                     </div>
                   </div>
                 </div>
@@ -403,6 +407,13 @@ const Dashboard = () => {
                   </button>
                 </div>
                 
+                <button 
+                  onClick={() => setDarkMode(!darkMode)}
+                  className="flex-shrink-0 p-3 bg-white/50 dark:bg-slate-800/50 rounded-2xl hover:scale-110 active:scale-95 transition-all group border border-white/20"
+                >
+                  {darkMode ? <Sun className="w-5 h-5 text-amber-400 group-hover:rotate-45 transition-transform" /> : <Moon className="w-5 h-5 text-slate-400 group-hover:-rotate-12 transition-transform" />}
+                </button>
+
                 <button className="flex-shrink-0 relative p-3 bg-white/50 dark:bg-slate-800/50 rounded-2xl hover:scale-110 active:scale-95 transition-all group border border-white/20">
                   <Bell className="w-5 h-5 text-slate-400 group-hover:text-primary-500 transition-colors" />
                   <span className="absolute top-3 right-3 w-2 h-2 bg-rose-500 rounded-full" />
@@ -441,7 +452,8 @@ const Dashboard = () => {
           >
             <div className={twMerge(
               "w-2 h-2 rounded-full animate-pulse",
-              toast.type === 'success' ? "bg-emerald-500" : "bg-primary-500"
+              toast.type === 'success' ? "bg-emerald-500" : 
+              toast.type === 'delete' || toast.type === 'error' ? "bg-rose-500" : "bg-primary-500"
             )} />
             <p className="text-sm font-bold tracking-tight">{toast.message}</p>
           </motion.div>

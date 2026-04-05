@@ -4,9 +4,21 @@ Finora Intelligence is a **10/10 production-grade** financial management platfor
 
 ---
 
-## 🚀 Live Demo & Interface
+## 📸 Interface Preview
 
-- **Live Demo**: [https://finora-intel.vercel.app/](https://finora-intel.vercel.app/) *(Mock Link)*
+![Finora Dashboard Preview](./public/screenshots/dashboard.png)
+*Desktop Intelligence View - Dark Mode*
+
+<div align="center">
+  <img src="./public/screenshots/mobile.png" width="300" alt="Mobile View" />
+  <p><i>Responsive Mobile Core Interface</i></p>
+</div>
+
+---
+
+## 🚀 Live Demo
+
+- **Live Demo**: [https://finora-pied.vercel.app/](https://finora-pied.vercel.app/) *(Live Link)*
 
 ---
 
@@ -95,5 +107,5 @@ The application features a dual-mode interface accessible via the **Top Navigati
 ---
 
 ### Author
-Developed with ❤️ by **Antigravity AI** for the **Finora Intelligence** project.
+Developed by Lal Satya Sai Thota .
 

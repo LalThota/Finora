@@ -2,8 +2,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend
+  PieChart as RechartsPieChart, Pie, Cell, Legend
 } from 'recharts';
+import { PieChart as PieChartIcon, TrendingUp } from 'lucide-react';
 import { useGlobalContext } from '../store/GlobalContext';
 import { format } from 'date-fns';
 
@@ -18,7 +19,7 @@ const CustomTooltip = ({ active, payload, label }) => {
           {payload.map((entry, index) => (
             <div key={index} className="flex items-center justify-between gap-4">
               <span className="text-sm font-medium" style={{ color: entry.color }}>{entry.name}</span>
-              <span className="text-sm font-black dark:text-white">${new Intl.NumberFormat().format(entry.value)}</span>
+              <span className="text-sm font-black dark:text-white">${Number(entry.value).toFixed(2)}</span>
             </div>
           ))}
         </div>
@@ -114,17 +115,32 @@ const ChartSection = () => {
                 dataKey="date" 
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: '#94A3B8', fontSize: 12, fontWeight: 600 }}
+                tick={{ fill: '#94A3B8', fontSize: 10, fontWeight: 700 }}
                 dy={15}
               />
               <YAxis 
+                yAxisId="left"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: '#94A3B8', fontSize: 12, fontWeight: 600 }}
+                tick={{ fill: '#3b82f6', fontSize: 10, fontWeight: 700 }}
                 tickFormatter={(value) => `$${value}`}
               />
-              <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#3b82f6', strokeWidth: 2, strokeDasharray: '5 5' }} />
+              <YAxis 
+                yAxisId="right"
+                orientation="right"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: '#f43f5e', fontSize: 10, fontWeight: 700 }}
+                tickFormatter={(value) => `$${value}`}
+              />
+              <Tooltip 
+                content={<CustomTooltip />} 
+                cursor={{ stroke: '#3b82f6', strokeWidth: 2, strokeDasharray: '5 5' }}
+                isAnimationActive={false}
+                trigger="click"
+              />
               <Area 
+                yAxisId="left"
                 type="monotone" 
                 dataKey="Income" 
                 stroke="#3b82f6" 
@@ -134,6 +150,7 @@ const ChartSection = () => {
                 animationDuration={2000}
               />
               <Area 
+                yAxisId="right"
                 type="monotone" 
                 dataKey="Expenses" 
                 stroke="#f43f5e" 
@@ -159,7 +176,7 @@ const ChartSection = () => {
         <div className="h-64 w-full relative">
           {categoryData.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
+              <RechartsPieChart>
                 <Pie
                   data={categoryData}
                   cx="50%"
@@ -175,12 +192,18 @@ const ChartSection = () => {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} cornerRadius={10} className="cursor-pointer outline-none" />
                   ))}
                 </Pie>
-                <Tooltip content={<CustomTooltip />} />
-              </PieChart>
+                <Tooltip content={<CustomTooltip />} trigger="click" />
+              </RechartsPieChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-full text-slate-400 text-sm italic">
-              No categories to show
+            <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
+              <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800/50 rounded-2xl flex items-center justify-center">
+                 <PieChartIcon className="w-8 h-8 text-slate-300 dark:text-slate-600" />
+              </div>
+              <div>
+                <p className="text-sm font-black text-slate-400 uppercase tracking-widest">No Data Logged</p>
+                <p className="text-[10px] text-slate-500 mt-1">Add transactions to see categories</p>
+              </div>
             </div>
           )}
           {categoryData.length > 0 && (
