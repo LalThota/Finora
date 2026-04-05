@@ -1,6 +1,6 @@
 # 💎 Finora Intelligence | Production Financial Suite
 
-Finora Intelligence is a **10/10 production-grade** financial management platform. It offers centralized state management, real-time advanced analytics, and a high-fidelity "Intelligence-First" UI/UX designed for top-tier frontend evaluation.
+Finora Intelligence is a **production-grade** financial management platform. It offers centralized state management, real-time advanced analytics, and a high-fidelity "Intelligence-First" UI/UX designed for top-tier frontend evaluation.
 
 ---
 
@@ -8,11 +8,6 @@ Finora Intelligence is a **10/10 production-grade** financial management platfor
 
 ![Finora Dashboard Preview](./public/screenshots/dashboard.png)
 *Desktop Intelligence View - Dark Mode*
-
-<div align="center">
-  <img src="./public/screenshots/mobile.png" width="300" alt="Mobile View" />
-  <p><i>Responsive Mobile Core Interface</i></p>
-</div>
 
 ---
 
